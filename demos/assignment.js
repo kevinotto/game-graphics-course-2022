@@ -100,7 +100,7 @@ let postFragmentShader = `
         float depth = texture(depthTex, v_position.xy).r;
         
         // Chromatic aberration 
-        vec2 caOffset = vec2(0.1, 2.0);
+        vec2 caOffset = vec2(0.5, 1.0);
         col.r = texture(tex, v_position.xy - caOffset).r;
         col.b = texture(tex, v_position.xy + caOffset).b;
         
@@ -108,10 +108,10 @@ let postFragmentShader = `
         col = depthOfField(col, depth, v_position.xy);
 
         // Noise         
-        col.rgb += (2.0 - col.rgb) * random(v_position.xy) * 0.1;
+        col.rgb += (1.0 - col.rgb) * random(v_position.xy) * 0.05;
         
         // Contrast + Brightness
-        col = pow(col, vec4(2.0)) * 0.8;
+        col = pow(col, vec4(1.5)) * 2.0;
         
         // Color curves
         col.rgb = col.rgb * vec3(1.2, 1.1, 1.0) + vec3(0.0, 0.05, 0.2);
@@ -147,7 +147,7 @@ async function loadTexture(fileName) {
 }
 
 (async () => {
-    let bgColor = vec4.fromValues(0.2, 0.2, 0.2, 1.0);
+    let bgColor = vec4.fromValues(0.1, 0.0, 0.1, 1.0);
     app.clearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 
     let program = app.createProgram(vertexShader.trim(), fragmentShader.trim());
@@ -208,19 +208,19 @@ async function loadTexture(fileName) {
            .enable(PicoGL.CULL_FACE)
            .clear();
 
-        drawCall.uniform("diffuseColor", vec4.fromValues(0.3, 0.0, 1.0, 1.0));
+        drawCall.uniform("diffuseColor", vec4.fromValues(0.4, 0.4, 1.0, 1.0));
         mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(-1.5, 0, -2));
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
         mat4.multiply(modelViewProjectionMatrix, viewProjMatrix, modelMatrix);
         drawCall.draw();
 
-        drawCall.uniform("diffuseColor", vec4.fromValues(0.1, 1.0, 0.2, 1.0));
+        drawCall.uniform("diffuseColor", vec4.fromValues(0.4, 0.9, 0.0, 1.0));
         mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(0, 0, 0));
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
         mat4.multiply(modelViewProjectionMatrix, viewProjMatrix, modelMatrix);
         drawCall.draw();
 
-        drawCall.uniform("diffuseColor", vec4.fromValues(1.0, 0.0, 0.2, 1.0));
+        drawCall.uniform("diffuseColor", vec4.fromValues(0.8, 0.4, 0.0, 1.0));
         mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(1.5, 0, 2));
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
         mat4.multiply(modelViewProjectionMatrix, viewProjMatrix, modelMatrix);
