@@ -72,8 +72,8 @@ let postFragmentShader = `
         for (float u = -1.0; u <= 1.0; u += 0.4)    
             for (float v = -1.0; v <= 1.0; v += 0.4) {
                 float factor = abs(depth - 0.995) * 350.0;
-                blur += texture(tex, uv + vec2(u, v) * factor * 0.02);
-                n += 1.0;
+                blur += texture(tex, uv + vec2(u, v) * factor * 0.01);
+                n += 2.0;
             }                
         return blur / n;
     }
@@ -108,13 +108,13 @@ let postFragmentShader = `
         col = depthOfField(col, depth, v_position.xy);
 
         // Noise         
-        col.rgb += (1.0 - col.rgb) * random(v_position.xy) * 0.05;
+        col.rgb += (1.0 - col.rgb) * random(v_position.xy) * 0.07;
         
         // Contrast + Brightness
         col = pow(col, vec4(1.5)) * 2.0;
         
         // Color curves
-        col.rgb = col.rgb * vec3(1.2, 1.1, 1.0) + vec3(0.0, 0.05, 0.2);
+        col.rgb = col.rgb * vec3(1.2, 1.1, 1.0) + vec3(0.0, 0.03, 0.1);
         
         // Ambient Occlusion
         //col = ambientOcclusion(col, depth, v_position.xy);                
@@ -147,7 +147,7 @@ async function loadTexture(fileName) {
 }
 
 (async () => {
-    let bgColor = vec4.fromValues(0.1, 0.0, 0.1, 1.0);
+    let bgColor = vec4.fromValues(0.1, 0.1, 0.1, 1.0);
     app.clearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 
     let program = app.createProgram(vertexShader.trim(), fragmentShader.trim());
@@ -191,10 +191,10 @@ async function loadTexture(fileName) {
         previousTime = time;
         time = timestamp / 1000;
 
-        let cameraPosition = vec3.fromValues(2, 0, 8);
-        rotation += (time - previousTime) * 0.2;
-        mat4.perspective(projectionMatrix, Math.PI / 10, app.width / app.height, 0.02, 70.0);
-        mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 0.5, 0), vec3.fromValues(0, 1, 0));
+        let cameraPosition = vec3.fromValues(2, 0, 15);
+        rotation += (time - previousTime) * -0.5;
+        mat4.perspective(projectionMatrix, Math.PI / 10, app.width / app.height, 0.10, 40.0);
+        mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 0.9, 0), vec3.fromValues(0, 2, 0));
         quat.fromEuler(modelRotation, Math.cos(rotation) * 20 - 90, Math.sin(rotation) * 20, 0)
         mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
 
@@ -209,7 +209,7 @@ async function loadTexture(fileName) {
            .clear();
 
         drawCall.uniform("diffuseColor", vec4.fromValues(0.4, 0.4, 1.0, 1.0));
-        mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(-1.5, 0, -2));
+        mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(-3, 1, -2));
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
         mat4.multiply(modelViewProjectionMatrix, viewProjMatrix, modelMatrix);
         drawCall.draw();
@@ -221,7 +221,7 @@ async function loadTexture(fileName) {
         drawCall.draw();
 
         drawCall.uniform("diffuseColor", vec4.fromValues(0.8, 0.4, 0.0, 1.0));
-        mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(1.5, 0, 2));
+        mat4.fromRotationTranslation(modelMatrix, modelRotation, vec3.fromValues(3, -1, 2));
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
         mat4.multiply(modelViewProjectionMatrix, viewProjMatrix, modelMatrix);
         drawCall.draw();
