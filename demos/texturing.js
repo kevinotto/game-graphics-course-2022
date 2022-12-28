@@ -7,7 +7,7 @@
 import PicoGL from "../node_modules/picogl/build/module/picogl.js";
 import {mat4, vec3} from "../node_modules/gl-matrix/esm/index.js";
 
-import {positions, uvs, indices} from "../blender/cube.js";
+import {positions, uvs, indices} from "../blender/Lambda.js";
 import {positions as planePositions, indices as planeIndices} from "../blender/plane.js";
 
 // language=GLSL
@@ -103,7 +103,7 @@ async function loadTexture(fileName) {
     return await createImageBitmap(await (await fetch("images/" + fileName)).blob());
 }
 
-const tex = await loadTexture("abstract.jpg");
+const tex = await loadTexture("colorsplashtexture.jpg");
 let drawCall = app.createDrawCall(program, vertexArray)
     .texture("tex", app.createTexture2D(tex, tex.width, tex.height, {
         magFilter: PicoGL.LINEAR,
@@ -115,24 +115,24 @@ let drawCall = app.createDrawCall(program, vertexArray)
 
 let skyboxDrawCall = app.createDrawCall(skyboxProgram, skyboxArray)
     .texture("cubemap", app.createCubemap({
-        negX: await loadTexture("stormydays_bk.png"),
-        posX: await loadTexture("stormydays_ft.png"),
-        negY: await loadTexture("stormydays_dn.png"),
-        posY: await loadTexture("stormydays_up.png"),
-        negZ: await loadTexture("stormydays_lf.png"),
-        posZ: await loadTexture("stormydays_rt.png")
+        negX: await loadTexture("xen9bk.bmp"),
+        posX: await loadTexture("xen9ft.bmp"),
+        negY: await loadTexture("xen9dn.bmp"),
+        posY: await loadTexture("xen9up.bmp"),
+        negZ: await loadTexture("xen9lf.bmp"),
+        posZ: await loadTexture("xen9rt.bmp")
     }));
 
 function draw(timems) {
-    const time = timems * 0.001;
+    const time = timems * 0.002;
 
     mat4.perspective(projMatrix, Math.PI / 2, app.width / app.height, 0.1, 100.0);
-    let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(0, 0.5, 2), vec3.fromValues(0, 0, 0), time * 0.05);
-    mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+    let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(5, 0.5, 2), vec3.fromValues(0, 0, 0), time * 0.15);
+    mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, -1, 0), vec3.fromValues(0, 1, 0));
     mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
 
-    mat4.fromXRotation(rotateXMatrix, time * 0.1136);
-    mat4.fromZRotation(rotateYMatrix, time * 0.2235);
+    mat4.fromXRotation(rotateXMatrix, time * 0.0136);
+    mat4.fromZRotation(rotateYMatrix, time * 0.0235);
     mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
 
     mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
